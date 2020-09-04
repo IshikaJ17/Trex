@@ -34,18 +34,20 @@ function preload(){
 }
 
 function setup() {
-  createCanvas(600, 200);
+  createCanvas(windowWidth, windowHeight);
   
-  trex = createSprite(50,180,20,50);
+  trex = createSprite(50,height-70,20,50);
   
   trex.addAnimation("running", trex_running);
   trex.addAnimation("collided", trex_collided);
   trex.scale = 0.5;
   
-  ground = createSprite(200,180,400,20);
+  ground = createSprite(width/2,height,width,20);
   ground.addImage("ground",groundImage);
-  ground.x = ground.width /2;
+  ground.x = width/2;
   ground.velocityX = -(6 + 3*score/100);
+  if((touches.length > 0 || keyDown("SPACE")) && trex.y >= height-120) 
+  { jumpSound.play( ) trex.velocityY = -10; touches = []; }
   
   gameOver = createSprite(300,100);
   gameOver.addImage(gameOverImg);
@@ -59,7 +61,7 @@ function setup() {
   gameOver.visible = false;
   restart.visible = false;
   
-  invisibleGround = createSprite(200,190,400,10);
+  invisibleGround = createSprite(width/2,height-10,width,10);
   invisibleGround.visible = false;
   
   cloudsGroup = new Group();
@@ -111,10 +113,9 @@ function draw() {
     //set lifetime of the game objects so that they are never destroyed
     obstaclesGroup.setLifetimeEach(-1);
     cloudsGroup.setLifetimeEach(-1);
+    if(touches.length>0 || keyDown("SPACE")) 
+    { reset(); touches = [] }
     
-    if(mousePressedOver(restart)) {
-      reset();
-    }
   }
   
   
@@ -124,7 +125,7 @@ function draw() {
 function spawnClouds() {
   //write code here to spawn the clouds
   if (frameCount % 60 === 0) {
-    var cloud = createSprite(600,120,40,10);
+    var cloud = createSprite(width+20,height-300,40,10);
     cloud.y = Math.round(random(80,120));
     cloud.addImage(cloudImage);
     cloud.scale = 0.5;
@@ -145,9 +146,13 @@ function spawnClouds() {
 
 function spawnObstacles() {
   if(frameCount % 60 === 0) {
-    var obstacle = createSprite(600,165,10,40);
+    var obstacle = createSprite(600,height-95,10,40);
     //obstacle.debug = true;
     obstacle.velocityX = -(6 + 3*score/100);
+    if((touches.length > 0 || keyDown("SPACE")) && trex.y >= height-120)
+    { 
+      jumpSound.play( ) trex.velocityY = -10; touches = []; 
+    }
     
     //generate random obstacles
     var rand = Math.round(random(1,6));
